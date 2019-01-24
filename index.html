@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Vue</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+
+  <div class="container" id="chat">
+      <div class="row">
+          <div class="col-md-12">
+              <div class="panel panel-default" style="height: 500px; overflow: auto" id="chat-content">
+                  <div class="panel-body">
+                        <div v-for="m in messages">
+
+                            <div style="margin-bottom: 10px">
+                                <span class="small" style="display: inline-block;">{{ m.tm }}</span>
+                                <span v-bind:style="{ color: m.color }">{{ m.name }}</span>
+                                <span v-html="m.msg"></span>
+                            </div>
+                        </div>
+                    </div>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-12">
+              <div class="panel panel-default">
+                  <div class="panel-body">
+                      <strong>Enter your message:</strong><br>
+                      <input type="text" class="form-control" style="margin-bottom: 10px" placeholder="Enter your message..."  v-model="msg" v-on:keyup.enter="send">
+                      <button class="btn btn-primary btn" v-on:click="send">
+                          Send Message
+                          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                      </button>
+                      <button class="btn btn-danger btn" v-on:click="quit">
+                          Quit
+                          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>    
+  </div>
+
+<script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+<script>
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+
+      return color;
+    }
+
+    const initialMsg = `
+      <h1>Welcome!</h1>
+      Hello everyone, tonight we\'re going to discuss the following agenda:
+      <ul>
+        <li>Topic #1</li>
+        <li>Topic #2</li>
+        <li>Topic #3</li>
+        <li>Topic #4</li>
+        <li>Topic #5</li>
+      </ul>
+      <p>Thanks everyone's participation.<br>The estimated time for this meeting is <b>90 minutes</b></p>
+    `;
+
+    const app = new Vue({
+        el: '#chat',
+        data: {
+            name: 'Bruno',
+            msg: '',
+            color: getRandomColor(),
+            messages: [
+                { name: '[System Bot]', msg: initialMsg, tm: (new Date()).toLocaleTimeString() },
+            ],
+            participants: [
+                // { name: 'Bruno', class: 'label label-success' },
+            ]
+        },
+        methods: {
+          send(){
+            if (this.msg.length > 0){
+              this.messages.push({name: this.name, msg: this.msg, tm: (new Date()).toLocaleTimeString(), color: this.color})
+              this.msg = '';
+              this.scrollBottom();
+            }
+          },
+          quit() {
+            if (confirm('Are you sure you want to quit?')){
+              window.close();
+            }
+          },
+          scrollBottom(){
+              Vue.nextTick(function () {
+                  var div = document.getElementById("chat-content");
+                  div.scrollTop = div.scrollHeight;
+              });
+          }
+        }
+    });
+</script>
+
+</body>
+</html>
